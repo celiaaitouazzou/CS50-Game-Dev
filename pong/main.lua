@@ -13,7 +13,7 @@
 
     This version is built to more closely resemble the NES than
     the original Pong machines or the Atari 2600 in terms of
-    resolution, though in widescreen (16:9) so it looks nicer on 
+    resolution, though in widescreen (16:9) so it looks nicer on
     modern systems.
 ]]
 
@@ -79,7 +79,7 @@ function love.load()
         ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
         ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static')
     }
-    
+
     -- initialize our virtual resolution, which will be rendered within our
     -- actual window no matter its dimensions
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -137,7 +137,7 @@ end
 function love.update(dt)
     if gameState == 'serve' then
         -- before switching to play, initialize ball's velocity based
-        -- on player who last scored
+        -- on player who last se-Dev Privatecored
         ball.dy = math.random(-50, 50)
         if servingPlayer == 1 then
             ball.dx = math.random(140, 200)
@@ -233,10 +233,20 @@ function love.update(dt)
     -- paddles can move no matter what state we're in
     --
     -- player 1
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
+
+    -- if the ball has been served , the ball is up compared to where the paddle is and 3 first quarter of the virtual screen,then :
+    if ball.y < player1.y and gameState == 'play' and ball.x < VIRTUAL_WIDTH*0.75 then
+      player1.dy = -PADDLE_SPEED
+
+    -- same logic here but it's when the ball is down from the paddle
+    elseif ball.y > (player1.y+player1.height) and gameState == 'play' and ball.x < VIRTUAL_WIDTH*0.75 then
         player1.dy = PADDLE_SPEED
+
+    --if it's close to the paddle , there is no need to move the paddle
+    elseif ball:collides(player1) or ball.x < 10 then
+        player1.dy = 0
+
+    --else, there's no need to move the paddle , so we keep it still
     else
         player1.dy = 0
     end
@@ -252,6 +262,10 @@ function love.update(dt)
 
     -- update our ball based on its DX and DY only if we're in play state;
     -- scale the velocity by dt so movement is framerate-independent
+    --if love.keyboard.isDown('enter') then
+    --  gameState = 'play';
+    --end
+
     if gameState == 'play' then
         ball:update(dt)
     end
@@ -308,7 +322,7 @@ function love.draw()
     push:apply('start')
 
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
-    
+
     -- render different things depending on which part of the game we're in
     if gameState == 'start' then
         -- UI messages
@@ -318,7 +332,7 @@ function love.draw()
     elseif gameState == 'serve' then
         -- UI messages
         love.graphics.setFont(smallFont)
-        love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!", 
+        love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!",
             0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to serve!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'play' then
@@ -334,7 +348,7 @@ function love.draw()
 
     -- show the score before ball is rendered so it can move over the text
     displayScore()
-    
+
     player1:render()
     player2:render()
     ball:render()
