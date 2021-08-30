@@ -235,20 +235,8 @@ function love.update(dt)
     -- player 1
 
     -- if the ball has been served , the ball is up compared to where the paddle is and 3 first quarter of the virtual screen,then :
-    if ball.y < player1.y and gameState == 'play' and ball.x < VIRTUAL_WIDTH*0.75 then
-      player1.dy = -PADDLE_SPEED
-
-    -- same logic here but it's when the ball is down from the paddle
-    elseif ball.y > (player1.y+player1.height) and gameState == 'play' and ball.x < VIRTUAL_WIDTH*0.75 then
-        player1.dy = PADDLE_SPEED
-
-    --if it's close to the paddle , there is no need to move the paddle
-    elseif ball:collides(player1) or ball.x < 10 then
-        player1.dy = 0
-
-    --else, there's no need to move the paddle , so we keep it still
-    else
-        player1.dy = 0
+    if not (ball.y == player1.y) and gameState == 'play' then
+      player1.dy = (ball.y - (player1.y + player1.height / 2)) * 20
     end
 
     -- player 2
