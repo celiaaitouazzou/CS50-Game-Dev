@@ -234,7 +234,7 @@ function love.update(dt)
     --
     -- player 1
 
-    -- if the ball has been served , the ball is up compared to where the paddle is and 3 first quarter of the virtual screen,then :
+    -- if the ball has been served, and the paddle is not in front of the ball then move the paddle to be in front of the ball :
     if not (ball.y == player1.y) and gameState == 'play' then
       player1.dy = (ball.y - (player1.y + player1.height / 2)) * 20
     end
